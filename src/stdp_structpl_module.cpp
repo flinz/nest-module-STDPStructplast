@@ -110,9 +110,9 @@ stdpstructpl::STDPStructplastModule::init( SLIInterpreter* i )
     .model_manager.register_connection_model< STDPStructplConnectionHom< nest::TargetIdentifierPtrRport > >(
       "stdp_structpl_synapse_hom" );
 
-  // nest::kernel()
-  //   .model_manager.register_connection_model< STDPStructplConnectionHom< nest::TargetIdentifierIndex > >(
-  //     "stdp_structpl_synapse_hom_hpc" );
+  nest::kernel()
+    .model_manager.register_connection_model< STDPStructplConnectionHom< nest::TargetIdentifierIndex > >(
+      "stdp_structpl_synapse_hom_hpc" );
 
 
 } // STDPStructplastModule::init()
