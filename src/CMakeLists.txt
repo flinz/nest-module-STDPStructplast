@@ -25,6 +25,7 @@ set( MODULE_NAME ${SHORT_NAME}module )
 # 2) Add all your sources here
 set( MODULE_SOURCES
     stdp_structpl_module.h stdp_structpl_module.cpp
+    stdp_structpl_names.h stdp_structpl_names.cpp
     stdp_structpl_connection_hom.h stdp_structpl_connection_hom.cpp
     )
 

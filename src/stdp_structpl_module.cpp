@@ -34,8 +34,6 @@
 #include "connector_model_impl.h"
 #include "dynamicloader.h"
 #include "exceptions.h"
-#include "genericmodel.h"
-#include "genericmodel_impl.h"
 #include "kernel_manager.h"
 #include "model.h"
 #include "model_manager_impl.h"
@@ -109,12 +107,12 @@ stdpstructpl::STDPStructplastModule::init( SLIInterpreter* i )
 {
 
   nest::kernel()
-    .model_manager.register_connection_model< STDPStructplConnectionHom< TargetIdentifierPtrRport > >(
+    .model_manager.register_connection_model< STDPStructplConnectionHom< nest::TargetIdentifierPtrRport > >(
       "stdp_structpl_synapse_hom" );
 
-  nest::kernel()
-    .model_manager.register_connection_model< STDPStructplConnectionHom< TargetIdentifierIndex > >(
-      "stdp_structpl_synapse_hom_hpc" );
+  // nest::kernel()
+  //   .model_manager.register_connection_model< STDPStructplConnectionHom< nest::TargetIdentifierIndex > >(
+  //     "stdp_structpl_synapse_hom_hpc" );
 
 
 } // STDPStructplastModule::init()

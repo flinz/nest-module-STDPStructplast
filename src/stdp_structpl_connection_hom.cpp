@@ -27,7 +27,7 @@
 #include "stdp_structpl_connection_hom.h"
 #include "event.h"
 
-namespace nest
+namespace stdpstructpl
 {
 //
 // Implementation of class STDPStructplHomCommonProperties.
@@ -86,24 +86,24 @@ STDPStructplHomCommonProperties::compute_dependent_params()
   pow_term_6_ = tau_slow_ * tau_slow_;
 
   // precompute exponential decay values up to an interval of t_cache_ seconds
-  exp_cache_len_ = Time( Time::ms( t_cache_ * 1000. ) ).get_steps();
+  exp_cache_len_ = nest::Time( nest::Time::ms( t_cache_ * 1000. ) ).get_steps();
   exp_2_.resize( exp_cache_len_ );
   exp_7_.resize( exp_cache_len_ );
   exp_8_.resize( exp_cache_len_ );
   for ( long i = 0; i < exp_cache_len_; i++ )
   {
-    double t_i_ = Time( Time::step( i ) ).get_ms() / 1000.;
+    double t_i_ = nest::Time( nest::Time::step( i ) ).get_ms() / 1000.;
     exp_2_[ i ] = std::exp( -t_i_ / tau_slow_ );
     exp_8_[ i ] = std::exp( -t_i_ / tau_ );
     exp_7_[ i ] = std::exp( -t_i_ * alpha_ );
   }
 
-  steps_grace_period_ = Time( Time::ms( t_grace_period_ * 1000. ) ).get_steps();
+  steps_grace_period_ = nest::Time( nest::Time::ms( t_grace_period_ * 1000. ) ).get_steps();
 }
 
 void
 STDPStructplHomCommonProperties::set_status( const DictionaryDatum& d,
-  ConnectorModel& cm )
+  nest::ConnectorModel& cm )
 {
   CommonSynapseProperties::set_status( d, cm );
 
@@ -124,7 +124,7 @@ STDPStructplHomCommonProperties::set_status( const DictionaryDatum& d,
 
   if ( not( tau_slow_ > tau_ ) )
   {
-    throw BadProperty(
+    throw nest::BadProperty(
       "Parameter tau_slow (time-constant of slow trace) must be larger than "
       "tau "
       "(time-constant of fast trace)." );
@@ -132,28 +132,28 @@ STDPStructplHomCommonProperties::set_status( const DictionaryDatum& d,
 
   if ( not( w0_ >= 0 ) )
   {
-    throw BadProperty( "w0 (creation weight) must be positive." );
+    throw nest::BadProperty( "w0 (creation weight) must be positive." );
   }
 
   if ( not( ( wmax_ < 0 ) or ( ( wmax_ > 0 ) and ( w0_ <= wmax_ ) ) ) )
   {
-    throw BadProperty( "wmax must be negative (disabled) or greater than w0." );
+    throw nest::BadProperty( "wmax must be negative (disabled) or greater than w0." );
   }
 
   if ( not( lambda_ >= 0 ) )
   {
-    throw BadProperty( "lambda (creation rate) must be positive." );
+    throw nest::BadProperty( "lambda (creation rate) must be positive." );
   }
 
   if ( not( t_cache_ >= 0. ) )
   {
-    throw BadProperty(
+    throw nest::BadProperty(
       "The time interval for caching of exponentials must be positive" );
   }
 
   if ( not( t_grace_period_ >= 0. ) )
   {
-    throw BadProperty( "The grace period must be positive" );
+    throw nest::BadProperty( "The grace period must be positive" );
   }
 
   if ( safe_mode_ )
@@ -174,7 +174,7 @@ STDPStructplHomCommonProperties::set_status( const DictionaryDatum& d,
     {
       if ( not( rates_[ i ] < rates_[ i - 1 ] ) )
       {
-        throw BadProperty(
+        throw nest::BadProperty(
           "Safe mode is not supported for the supplied time constants" );
       }
     }

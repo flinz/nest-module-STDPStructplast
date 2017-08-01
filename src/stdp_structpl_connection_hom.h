@@ -108,15 +108,16 @@ SeeAlso: stdp_synapse_hom, static_synapse
 #include <math.h>
 #include "connection.h"
 #include "exp_randomdev.h"
+#include "stdp_structpl_names.h"
 
-namespace nest
+namespace stdpstructpl
 {
 
 /**
  * Class containing the common properties for all synapses of type
  * STDPConnectionHom.
  */
-class STDPStructplHomCommonProperties : public CommonSynapseProperties
+class STDPStructplHomCommonProperties : public nest::CommonSynapseProperties
 {
 
   template < typename targetidentifierT >
@@ -137,7 +138,7 @@ public:
   /**
    * Set properties from the values given in dictionary.
    */
-  void set_status( const DictionaryDatum& d, ConnectorModel& cm );
+  void set_status( const DictionaryDatum& d, nest::ConnectorModel& cm );
 
   // data members common to all connections
   double tau_slow_;
@@ -179,12 +180,12 @@ private:
 // (used for pointer / target index addressing)
 // derived from generic connection template
 template < typename targetidentifierT >
-class STDPStructplConnectionHom : public Connection< targetidentifierT >
+class STDPStructplConnectionHom : public nest::Connection< targetidentifierT >
 {
 
 public:
   typedef STDPStructplHomCommonProperties CommonPropertiesType;
-  typedef Connection< targetidentifierT > ConnectionBase;
+  typedef nest::Connection< targetidentifierT > ConnectionBase;
 
   /**
    * Default Constructor.
@@ -227,7 +228,7 @@ public:
   /**
    * Set properties of this connection from the values given in dictionary.
    */
-  void set_status( const DictionaryDatum& d, ConnectorModel& cm );
+  void set_status( const DictionaryDatum& d, nest::ConnectorModel& cm );
 
   /**
    * Send an event to the receiver of this connection.
@@ -235,21 +236,21 @@ public:
    * \param t_lastspike Point in time of last spike sent.
    * \param cp common properties of all synapses (empty).
    */
-  void send( Event& e,
-    thread t,
+  void send( nest::Event& e,
+    nest::thread t,
     double t_lastspike,
     const STDPStructplHomCommonProperties& cp );
 
-  class ConnTestDummyNode : public ConnTestDummyNodeBase
+  class ConnTestDummyNode : public nest::ConnTestDummyNodeBase
   {
   public:
     // Ensure proper overriding of overloaded virtual functions.
     // Return values from functions are ignored.
-    using ConnTestDummyNodeBase::handles_test_event;
-    port
-    handles_test_event( SpikeEvent&, rport )
+    using nest::ConnTestDummyNodeBase::handles_test_event;
+    nest::port
+    handles_test_event( nest::SpikeEvent&, nest::rport )
     {
-      return invalid_port_;
+      return nest::invalid_port_;
     }
   };
 
@@ -269,9 +270,9 @@ public:
    * \param t_lastspike last spike emitted by presynaptic neuron
    */
   void
-  check_connection( Node& s,
-    Node& t,
-    rport receptor_type,
+  check_connection( nest::Node& s,
+    nest::Node& t,
+    nest::rport receptor_type,
     double t_lastspike,
     const CommonPropertiesType& )
   {
@@ -322,7 +323,7 @@ private:
     else
     {
       // we compute the exponential terms
-      double t_i_ = Time( Time::step( delta_i ) ).get_ms() / 1000.;
+      double t_i_ = nest::Time( nest::Time::step( delta_i ) ).get_ms() / 1000.;
       exp_term_2_ = std::exp( -t_i_ / cp.tau_slow_ );
       exp_term_8_ = std::exp( -t_i_ / cp.tau_ );
       exp_term_7_ = std::exp( -t_i_ * cp.alpha_ );
@@ -679,7 +680,7 @@ private:
             if ( deletion_trigger )
             {
               // generate an exponentially distributed number.
-              w_create_steps_[ i ] = Time( Time::ms( exp_dev_( rng_ )
+              w_create_steps_[ i ] = nest::Time( nest::Time::ms( exp_dev_( rng_ )
                                              / cp.lambda_ * 1e3 ) ).get_steps();
               // set synapse to equal zero
               w_jk_[ i ] = 0.;
@@ -716,7 +717,7 @@ private:
           else
           {
             // otherwise we compute them
-            double t_delta_ = Time( Time::step( delta_this ) ).get_ms() / 1000.;
+            double t_delta_ = nest::Time( nest::Time::step( delta_this ) ).get_ms() / 1000.;
             exp_term_8_ = std::exp( -t_delta_ / cp.tau_ );
             exp_term_9_ = std::exp( -t_delta_ / cp.tau_slow_ );
           }
@@ -783,20 +784,20 @@ private:
  */
 template < typename targetidentifierT >
 void
-STDPStructplConnectionHom< targetidentifierT >::send( Event& e,
-  thread t,
+STDPStructplConnectionHom< targetidentifierT >::send( nest::Event& e,
+  nest::thread t,
   double t_lastspike,
   const STDPStructplHomCommonProperties& cp )
 {
   // once the synapse receives a spike event, it updates its state, from the
   // last spike to this one.
   double t_spike = e.get_stamp().get_ms();
-  long steps_total = Time( Time::ms( t_spike - t_lastspike ) ).get_steps();
+  long steps_total = nest::Time( nest::Time::ms( t_spike - t_lastspike ) ).get_steps();
 
   // get spike history in relevant range (t1, t2] from post-synaptic neuron
-  Node* target = get_target( t );
-  std::deque< histentry >::iterator start;
-  std::deque< histentry >::iterator finish;
+  nest::Node* target = get_target( t );
+  std::deque< nest::histentry >::iterator start;
+  std::deque< nest::histentry >::iterator finish;
   target->get_history( t_lastspike, t_spike, &start, &finish );
 
   // Before anything else happens, we check if this synapse actually has
@@ -835,7 +836,7 @@ STDPStructplConnectionHom< targetidentifierT >::send( Event& e,
     }
 
     // get random number generator of target thread
-    rng_ = kernel().rng_manager.get_rng( target->get_vp() );
+    rng_ = nest::kernel().rng_manager.get_rng( target->get_vp() );
 
     // integration of synapse state starts from the last spike received
     double t_last_postspike = t_lastspike;
@@ -843,7 +844,7 @@ STDPStructplConnectionHom< targetidentifierT >::send( Event& e,
     // integration proceeds from postsynaptic spike to postsyn. spike in range.
     while ( start != finish )
     {
-      long delta = Time( Time::ms( start->t_ - t_last_postspike ) ).get_steps();
+      long delta = nest::Time( nest::Time::ms( start->t_ - t_last_postspike ) ).get_steps();
 
       // integrate the state variables for this delta
       // here we use the analytical solution of the ODEs in between spikes
@@ -864,7 +865,7 @@ STDPStructplConnectionHom< targetidentifierT >::send( Event& e,
     // it remains to integrate from the last postsynaptic spike to the time of
     // the presynaptic spike received.
     long remaining_delta =
-      Time( Time::ms( t_spike - t_last_postspike ) ).get_steps();
+      nest::Time( nest::Time::ms( t_spike - t_last_postspike ) ).get_steps();
     integrate_( cp, remaining_delta );
 
     // Now, after updating the synapse state, we are ready to transmit the
@@ -978,7 +979,7 @@ template < typename targetidentifierT >
 void
 STDPStructplConnectionHom< targetidentifierT >::set_status(
   const DictionaryDatum& d,
-  ConnectorModel& cm )
+  nest::ConnectorModel& cm )
 {
   ConnectionBase::set_status( d, cm );
 
@@ -989,7 +990,7 @@ STDPStructplConnectionHom< targetidentifierT >::set_status(
 
   if ( not( n_conns_ > 0 ) )
   {
-    throw BadProperty( "Number of potential connections must be positive" );
+    throw nest::BadProperty( "Number of potential connections must be positive" );
   }
 
   if ( n_updated == true )
@@ -1004,12 +1005,12 @@ STDPStructplConnectionHom< targetidentifierT >::set_status(
 
   if ( not( n_create_ >= 0 ) )
   {
-    throw BadProperty( "Number of creation events must be positive" );
+    throw nest::BadProperty( "Number of creation events must be positive" );
   }
 
   if ( not( n_delete_ >= 0 ) )
   {
-    throw BadProperty( "Number of deletion events must be positive" );
+    throw nest::BadProperty( "Number of deletion events must be positive" );
   }
 
   std::vector< double > r_jk_tmp;
@@ -1017,7 +1018,7 @@ STDPStructplConnectionHom< targetidentifierT >::set_status(
   {
     if ( r_jk_tmp.size() != ( unsigned ) n_conns_ )
     {
-      throw BadProperty( "Size of r_jk must be equal to n_pot_conns" );
+      throw nest::BadProperty( "Size of r_jk must be equal to n_pot_conns" );
     }
     r_jk_ = r_jk_tmp;
   }
@@ -1027,7 +1028,7 @@ STDPStructplConnectionHom< targetidentifierT >::set_status(
   {
     if ( c_jk_tmp.size() != ( unsigned ) n_conns_ )
     {
-      throw BadProperty( "Size of c_jk must be equal to n_pot_conns" );
+      throw nest::BadProperty( "Size of c_jk must be equal to n_pot_conns" );
     }
     c_jk_ = c_jk_tmp;
   }
@@ -1038,7 +1039,7 @@ STDPStructplConnectionHom< targetidentifierT >::set_status(
   {
     if ( r_post_jk_tmp.size() != ( unsigned ) n_conns_ )
     {
-      throw BadProperty( "Size of r_post_jk must be equal to n_pot_conns" );
+      throw nest::BadProperty( "Size of r_post_jk must be equal to n_pot_conns" );
     }
     r_post_jk_ = r_post_jk_tmp;
   }
@@ -1049,7 +1050,7 @@ STDPStructplConnectionHom< targetidentifierT >::set_status(
   {
     if ( R_post_jk_tmp.size() != ( unsigned ) n_conns_ )
     {
-      throw BadProperty( "Size of R_post_jk must be equal to n_pot_conns" );
+      throw nest::BadProperty( "Size of R_post_jk must be equal to n_pot_conns" );
     }
     R_post_jk_ = R_post_jk_tmp;
   }
@@ -1060,7 +1061,7 @@ STDPStructplConnectionHom< targetidentifierT >::set_status(
   {
     if ( w_jk_tmp.size() != ( unsigned ) n_conns_ )
     {
-      throw BadProperty( "Size of w_jk must be equal to n_pot_conns" );
+      throw nest::BadProperty( "Size of w_jk must be equal to n_pot_conns" );
     }
     w_jk_ = w_jk_tmp;
     weights_updated = true;
@@ -1072,7 +1073,7 @@ STDPStructplConnectionHom< targetidentifierT >::set_status(
   {
     if ( w_create_steps_tmp.size() != ( unsigned ) n_conns_ )
     {
-      throw BadProperty(
+      throw nest::BadProperty(
         "Size of w_create_steps must be equal to n_pot_conns" );
     }
 
@@ -1103,7 +1104,7 @@ STDPStructplConnectionHom< targetidentifierT >::set_status(
         // disallowed: can not set creation timer on existing positive contact
         else
         {
-          throw BadProperty(
+          throw nest::BadProperty(
             "Can not set a positive value for w_create_steps on "
             "a contact with positive weight w_jk. Consider setting both "
             "w_jk=0 and w_create_steps>0." );
