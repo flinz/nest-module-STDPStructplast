@@ -20,6 +20,4 @@
 cmake_minimum_required( VERSION 2.8.12 )
 
 # Test SPORE core functions
-add_test( NAME circular_buffer COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/test_circular_buffer.py )
-add_test( NAME tracing_node COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/test_tracing_node.py )
-add_test( NAME connection COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/test_connection.py )
+add_test( NAME STDPStructplast COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/test_stdp_structplast_synapse.py )

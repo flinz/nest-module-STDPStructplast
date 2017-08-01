@@ -24,7 +24,8 @@ set( MODULE_NAME ${SHORT_NAME}module )
 
 # 2) Add all your sources here
 set( MODULE_SOURCES
-    step_pattern_builder.h step_pattern_builder.cpp
+    stdp_structpl_module.h stdp_structpl_module.cpp
+    stdp_structpl_connection_hom.h stdp_structpl_connection_hom.cpp
     )
 
 # 3) We require a header name like this:
