@@ -1,0 +1,110 @@
+# This file is part of STDPStructplast.
+#
+# Copyright (C) 2017, see AUTHORS.
+#
+# STDPStructplast is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# STDPStructplast is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with STDPStructplast.  If not, see <http://www.gnu.org/licenses/>.
+#
+# For more information see: https://github.com/flinz/nest-module-STDPStructplast
+
+
+# This is the Travis CI top-level script to setup and run the NEST build and test environment. 
+
+
+language: minimal
+
+# Required for Ubuntu Trusty (14.04 LTS).
+sudo: required
+dist: trusty
+#https://blog.travis-ci.com/2017-06-19-trusty-updates-2017-Q2
+group: edge
+cache:
+  directory:
+    - $HOME/.cache
+
+before_install:
+  - echo "+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +"
+  - echo "+         P R E P A R E   N E S T   B U I L D   E N V I R O N M E N T         +"
+  - echo "+ + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +"
+  - export SOURCEDIR=$PWD
+  
+  - mkdir -p $HOME/nest
+  - cd $HOME/nest
+  - git clone https://github.com/nest/nest-simulator.git
+  - mkdir -p $HOME/nest/build
+  - mkdir -p $HOME/nest/install
+
+  - cd $HOME/build
+  - echo $PATH
+
+  # Update package repository status (-qq is more quiet).
+  - sudo rm -rf /var/lib/apt/lists/*
+  - ls /etc/apt/sources.list.d/
+  - sudo apt-get update -qq
+
+  # Remove automatically all unused packages.
+  - sudo apt-get autoremove
+
+  # Install packages required by NEST.
+  # (Please see also: http://www.nest-simulator.org/installation/#standard-configuration)
+  - sudo apt-get install -y build-essential cmake libltdl7-dev libreadline6-dev libncurses5-dev libgsl0-dev python-all-dev python-numpy python-scipy python-matplotlib ipython
+
+  # Install pip and Cython.
+  - wget https://bootstrap.pypa.io/get-pip.py
+  - sudo python get-pip.py
+  - sudo pip install -U setuptools
+  - pip install --user cython==0.23.4
+
+  # Install package terminaltables required by parse_travis_log.py to create the build summary.
+  - sudo pip install terminaltables
+
+  # Install OpenMPI.
+  - sudo apt-get install -y openmpi-bin libopenmpi-dev
+
+  # Install nose framework for the Python testsuite.
+  - sudo apt-get install -y python-nose
+
+  # Install VERA++ and pep8 for static code analysis.
+  - sudo apt-get install -y vera++ pep8
+
+  # Required for building cppcheck-1.69.
+  - sudo apt-get install -y libpcre3 libpcre3-dev
+
+  # Install jq to process JSON output from GitHub API.
+  - sudo apt-get install -y jq
+
+  # Build nest
+  - cd $HOME/nest/build
+  - cmake -DCMAKE_INSTALL_PREFIX:PATH=$HOME/nest/install ../nest-simulator
+  - make
+  - make install
+  
+  # Change directory back to the Module source code directory.
+  - cd $SOURCEDIR
+
+install:
+  - which cython
+  - cython --version
+  - which python
+  - python --version
+  - which pip
+  - which cmake
+  - cmake --version
+  - mkdir -p $HOME/build/mmb
+  - cd $HOME/build/mmb
+  - cmake -Dwith-nest=$HOME/nest/install/bin/nest-config $SOURCEDIR
+  - make
+  - make install
+
+script:
+  - make test
