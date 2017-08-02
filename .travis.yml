@@ -108,3 +108,4 @@ install:
 
 script:
   - make test
+  - echo "Success"
