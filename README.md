@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/flinz/nest-module-STDPStructplast.svg?branch=master)](https://travis-ci.org/flinz/nest-module-STDPStructplast)
+
 # nest-module-STDPStructplast
 
 Combined STDP and structural plasticity synapse model with multiple synaptic contacts, that creates a new synapse model called ``stdp_structpl_synapse_hom``.

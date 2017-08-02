@@ -107,5 +107,5 @@ install:
   - make install
 
 script:
-  - make test VERBOSE=1
-  - echo "Success"
+  - source $HOME/nest/install/bin/nest_vars.sh
+  - CTEST_OUTPUT_ON_FAILURE=1 make test
