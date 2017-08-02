@@ -20,4 +20,4 @@
 cmake_minimum_required( VERSION 2.8.12 )
 
 # Test STDPStructplast
-add_test( NAME STDPStructplast COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/test_stdp_structplast_synapse.py )
+add_test( NAME STDPStructplast COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/test_stdp_structpl_synapse.py )
