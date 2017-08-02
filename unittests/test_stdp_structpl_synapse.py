@@ -26,6 +26,7 @@ import nest
 import math
 import numpy as np
 import unittest
+nest.Install("stdp_structpl_module")
 
 
 @nest.check_stack

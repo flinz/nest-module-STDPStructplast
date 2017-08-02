@@ -22,8 +22,6 @@
  */
 
 /*
- * Initialization file for SPOREModule.
- * Run automatically when SPOREModule is loaded.
+ * Initialization file for STDPStructplast.
+ * Run automatically when STDPStructplast is loaded.
  */
-
-100 100 InitSynapseUpdater
