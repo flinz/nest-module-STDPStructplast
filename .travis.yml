@@ -107,5 +107,5 @@ install:
   - make install
 
 script:
-  - make test
+  - make test VERBOSE=1
   - echo "Success"
