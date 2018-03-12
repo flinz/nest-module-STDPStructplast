@@ -4,13 +4,17 @@
 
 Combined STDP and structural plasticity synapse model with multiple synaptic contacts, that creates a new synapse model called ``stdp_structpl_synapse_hom``.
 
-The connector ``stdp_structpl_synapse_hom`` can create synapses with spike time dependent plasticity as defined in [1]. Each synapse (connection) of this model consists of several (``n_pot_conns``) synaptic contacts. If the weight of a contact drops below 0 the contact is deleted. Deleted contacts are recreated randomly with a constant rate.
+The connector ``stdp_structpl_synapse_hom`` can create synapses with spike time dependent plasticity as defined in [1, 2]. Each synapse (connection) of this model consists of several (``n_pot_conns``) synaptic contacts. If the weight of a contact drops below 0 the contact is deleted. Deleted contacts are recreated randomly with a constant rate.
 
 ## References
 [1] Moritz Deger, Alexander Seeholzer, Wulfram Gerstner - Multi-contact synapses
 for stable networks: a spike-timing dependent model of dendritic spine
 plasticity and turnover. Preprint arXiv:1609.05730 [q-bio.NC]
 https://arxiv.org/abs/1609.05730
+
+[2] Moritz Deger, Alexander Seeholzer, Wulfram Gerstner - Multicontact Co-Operativity in Spike-Timing–Dependent Structural Plasticity Stabilizes Networks. Cerebral Cortex 28, no. 4 (April 1, 2018): 1396–1415.
+https://doi.org/10.1093/cercor/bhx339.
+
 
 
 ## Installation Guide
